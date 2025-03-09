@@ -2,6 +2,8 @@ package Main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class InterfazRutinas extends JFrame {
 
@@ -9,23 +11,58 @@ public class InterfazRutinas extends JFrame {
     JLabel NombreDeUsuario;
     JButton BuscarUsuario, Agregar, Modificar, Quitar;
     DefaultListModel<String> ListaDeRutinas = new DefaultListModel<>();
+    JMenuBar MenuBar;
+    JMenu Options;
+    JMenuItem AddUser, DeleteUser;
 
     public InterfazRutinas(){
         setLayout(null);
-        setSize(new Dimension(751,500));
+        setSize(new Dimension(751,520));
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         Init();
 
-        setVisible(true);
     }
 
     private void Init(){
+
+        MenuBar = new JMenuBar();
+        setJMenuBar(MenuBar);
+
+        Options = new JMenu("Opciones");
+        MenuBar.add(Options);
+
+        AddUser = new JMenuItem("Agregar Usuario");
+        AddUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == AddUser){
+                    AgregarUsuarios AU = new AgregarUsuarios();
+                    AU.setLocationRelativeTo(null);
+                    AU.setVisible(true);
+                }
+            }
+        });
+        Options.add(AddUser);
+
+        DeleteUser = new JMenuItem("Elimianr Usuario");
+        DeleteUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == DeleteUser){
+                    EliminarUsuario EU = new EliminarUsuario();
+                    EU.setLocationRelativeTo(null);
+                    EU.setVisible(true);
+                }
+            }
+        });
+        Options.add(DeleteUser);
+
         ListaDeRutinas.addElement("Funciona");
 
-        NombreDeUsuario = new JLabel("Rutinas de: Fernandez Felipe Ruben");
+        NombreDeUsuario = new JLabel("Rutinas de:");
         NombreDeUsuario.setBounds(25,60,230,30);
         add(NombreDeUsuario);
 
@@ -33,6 +70,18 @@ public class InterfazRutinas extends JFrame {
         //Botonos
         BuscarUsuario = new JButton("Buscar");
         BuscarUsuario.setBounds(240,60,100,30);
+        BuscarUsuario.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == BuscarUsuario){
+
+                        BuscarUsuario B = new BuscarUsuario();
+                        B.setLocationRelativeTo(null);
+                        B.setVisible(true);
+
+                }
+            }
+        });
         add(BuscarUsuario);
 
         Agregar = new JButton("Agregar Rutina");

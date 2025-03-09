@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sun Mar 09 00:08:13 ART 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-0195-78df-e080-000006f89990 
+on database directory C:\Users\ANDRES\Desktop\Admin Rutinas\database\DBUsuarios with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@76ed5528 
+Loaded from file:/C:/Users/ANDRES/.m2/repository/org/apache/derby/derby/10.17.1.0/derby-10.17.1.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=21.0.4+8-LTS-274
+user.dir=C:\Users\ANDRES\Desktop\Admin Rutinas
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

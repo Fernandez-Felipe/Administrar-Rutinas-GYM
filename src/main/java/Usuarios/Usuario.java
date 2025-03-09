@@ -10,10 +10,9 @@ public class Usuario implements Serializable {
 
     private ArrayList<Rutina> runinas = new ArrayList<>();
 
-    public Usuario(int Documento, int ID, String Nombre, String Apellido){
+    public Usuario(int Documento, String Nombre, String Apellido){
 
         this.Documento = Documento;
-        this.ID = ID;
         this.Nombre = Nombre;
         this.Apellido = Apellido;
 
@@ -27,10 +26,6 @@ public class Usuario implements Serializable {
 
     public int getDocumento() {
         return Documento;
-    }
-
-    public int getID() {
-        return ID;
     }
 
     public String getNombre() {
