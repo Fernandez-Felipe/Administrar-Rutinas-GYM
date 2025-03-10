@@ -1,19 +1,33 @@
 package Main;
 
+import Usuarios.RUTINAS;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class InterfazRutinas extends JFrame {
 
-    JList<String> RutinasDeUsuario, EjerciciosDeLaRutina;
+    JList<String> RutinasDeUsuario;
+    JPanel  EjerciciosDeLaRutina;
     JLabel NombreDeUsuario;
     JButton BuscarUsuario, Agregar, Modificar, Quitar;
     DefaultListModel<String> ListaDeRutinas = new DefaultListModel<>();
     JMenuBar MenuBar;
     JMenu Options;
     JMenuItem AddUser, DeleteUser;
+
+    static RUTINAS rutinas;
+
+    public static int ID;
 
     public InterfazRutinas(){
         setLayout(null);
@@ -60,8 +74,6 @@ public class InterfazRutinas extends JFrame {
         });
         Options.add(DeleteUser);
 
-        ListaDeRutinas.addElement("Funciona");
-
         NombreDeUsuario = new JLabel("Rutinas de:");
         NombreDeUsuario.setBounds(25,60,230,30);
         add(NombreDeUsuario);
@@ -97,15 +109,40 @@ public class InterfazRutinas extends JFrame {
         add(Quitar);
 
         RutinasDeUsuario = new JList<>(ListaDeRutinas);
-        EjerciciosDeLaRutina = new JList<>();
+        EjerciciosDeLaRutina = new JPanel();
 
         JScrollPane scrollPaneRutinas = new JScrollPane(RutinasDeUsuario);
         scrollPaneRutinas.setBounds(25,100,316,350);
         add(scrollPaneRutinas);
 
-        JScrollPane scrollPaneEjercicion = new JScrollPane(EjerciciosDeLaRutina);
-        scrollPaneEjercicion.setBounds(350,100,376,250);
-        add(scrollPaneEjercicion);
+        EjerciciosDeLaRutina.setBounds(350,100,376,250);
+        EjerciciosDeLaRutina.setBackground(Color.white);
+        add(EjerciciosDeLaRutina);
 
     }
+
+    public void CargarRutinas(Connection Conn) throws SQLException, IOException, ClassNotFoundException {
+
+        PreparedStatement pstm = Conn.prepareStatement("SELECT rutina FROM usuarios WHERE id = ?");
+
+        pstm.setInt(1,ID);
+
+        ResultSet rs = pstm.executeQuery();
+
+        if(rs.next()){
+            byte[] Rutinas = rs.getBytes("rutina");
+            ByteArrayInputStream BAIS = new ByteArrayInputStream(Rutinas);
+            ObjectInputStream OIS = new ObjectInputStream(BAIS);
+
+            rutinas = (RUTINAS) OIS.readObject();
+
+        }
+
+        if(rutinas.getRuninas().isEmpty()){
+            ListaDeRutinas.removeAllElements();
+            ListaDeRutinas.addElement("No hay rutinas registradas");
+        }
+
+    }
+
 }

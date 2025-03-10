@@ -1,7 +1,9 @@
 package Usuarios;
 
 
-public class Ejercicio {
+import java.io.Serializable;
+
+public class Ejercicio implements Serializable {
 
     private String Nombre;
     private int[][] Progrecion;

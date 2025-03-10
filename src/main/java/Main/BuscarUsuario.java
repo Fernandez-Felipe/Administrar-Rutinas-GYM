@@ -68,6 +68,10 @@ public class BuscarUsuario extends JFrame {
                             System.out.println("Nombre: " + nombre);
                             System.out.println("Edad: " + apellido);
 
+                            InterfazRutinas.ID = rs.getInt(1);
+
+                            main.Window.CargarRutinas(Conn);
+
                             dispose();
 
                         } else {

@@ -2,11 +2,18 @@ package Main;
 
 
 
+import Usuarios.Ejercicio;
+import Usuarios.RUTINAS;
+import Usuarios.Rutina;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 
 public class AgregarUsuarios extends JFrame {
 
@@ -64,12 +71,20 @@ public class AgregarUsuarios extends JFrame {
                     try{
 
                         Conn = main.Conectar.getConn();
-                        PreparedStatement pstm = Conn.prepareStatement("INSERT INTO usuarios (id,nombre,apellido)" +
-                                                                           " VALUES (?,?,?)");
+                        PreparedStatement pstm = Conn.prepareStatement("INSERT INTO usuarios (id,nombre,apellido,rutina)" +
+                                                                           " VALUES (?,?,?,?)");
+
+                        ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
+                        ObjectOutputStream OOS = new ObjectOutputStream(BAOS);
+                        OOS.writeObject(new RUTINAS(new ArrayList<Rutina>()));
+                        OOS.close();
+
+                        byte[] RutinasSerializadas = BAOS.toByteArray();
 
                         pstm.setInt(1,Integer.parseInt(dni.getText()));
                         pstm.setString(2,nombre.getText());
                         pstm.setString(3,apellido.getText());
+                        pstm.setBytes(4,RutinasSerializadas);
 
                         pstm.executeUpdate();
 
