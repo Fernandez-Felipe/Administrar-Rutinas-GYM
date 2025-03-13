@@ -1,16 +1,19 @@
-package DataBase;
+package Tools;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-public class ConnectioDB {
+public class ConnectionDB {
 
     private static final String DB_URL = "jdbc:derby:./database/DBUsuarios";
-    private static Connection conn = null;
+    private Connection conn;
 
-    public static Connection Conectar(){
+    public ConnectionDB(){
+        Conectar();
+    }
+
+    public void Conectar(){
         try {
             if (conn == null || conn.isClosed()) {
                 conn = DriverManager.getConnection(DB_URL);
@@ -19,10 +22,9 @@ public class ConnectioDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return conn;
     }
 
-    public static void cerrarConexion() {
+    public  void cerrarConexion() {
         try {
             if (conn != null && !conn.isClosed()) {
                 conn.close();
@@ -33,7 +35,7 @@ public class ConnectioDB {
         }
     }
 
-    public static Connection getConn() {
+    public Connection getConn() {
         return conn;
     }
 }

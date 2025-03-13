@@ -1,8 +1,13 @@
 package Main;
 
+import Tools.ConnectionDB;
+import Tools.DescerealizarRutinas;
+import Tools.GetData;
+import Usuarios.Ejercicio;
 import Usuarios.RUTINAS;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,8 +19,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class InterfazRutinas extends JFrame {
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
+public class InterfazRutinas extends ConnectionDB {
+
+
+    JFrame InterfazPrincipal;
     JList<String> RutinasDeUsuario;
     JPanel  EjerciciosDeLaRutina;
     JLabel NombreDeUsuario;
@@ -30,11 +39,14 @@ public class InterfazRutinas extends JFrame {
     public static int ID;
 
     public InterfazRutinas(){
-        setLayout(null);
-        setSize(new Dimension(751,520));
-        setLocationRelativeTo(null);
-        setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        InterfazPrincipal = new JFrame();
+
+        InterfazPrincipal.setLayout(null);
+        InterfazPrincipal.setSize(new Dimension(751,520));
+        InterfazPrincipal.setLocationRelativeTo(null);
+        InterfazPrincipal.setResizable(false);
+        InterfazPrincipal.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         Init();
 
@@ -43,7 +55,7 @@ public class InterfazRutinas extends JFrame {
     private void Init(){
 
         MenuBar = new JMenuBar();
-        setJMenuBar(MenuBar);
+        InterfazPrincipal.setJMenuBar(MenuBar);
 
         Options = new JMenu("Opciones");
         MenuBar.add(Options);
@@ -53,7 +65,7 @@ public class InterfazRutinas extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource() == AddUser){
-                    AgregarUsuarios AU = new AgregarUsuarios();
+                    AgregarUsuarios AU = new AgregarUsuarios(getConn());
                     AU.setLocationRelativeTo(null);
                     AU.setVisible(true);
                 }
@@ -66,7 +78,7 @@ public class InterfazRutinas extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource() == DeleteUser){
-                    EliminarUsuario EU = new EliminarUsuario();
+                    EliminarUsuario EU = new EliminarUsuario(getConn());
                     EU.setLocationRelativeTo(null);
                     EU.setVisible(true);
                 }
@@ -76,7 +88,7 @@ public class InterfazRutinas extends JFrame {
 
         NombreDeUsuario = new JLabel("Rutinas de:");
         NombreDeUsuario.setBounds(25,60,230,30);
-        add(NombreDeUsuario);
+        InterfazPrincipal.add(NombreDeUsuario);
 
 
         //Botonos
@@ -87,60 +99,101 @@ public class InterfazRutinas extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource() == BuscarUsuario){
 
-                        BuscarUsuario B = new BuscarUsuario();
+                        BuscarUsuario B = new BuscarUsuario(getConn());
                         B.setLocationRelativeTo(null);
                         B.setVisible(true);
 
                 }
             }
         });
-        add(BuscarUsuario);
+        InterfazPrincipal.add(BuscarUsuario);
 
         Agregar = new JButton("Agregar Rutina");
         Agregar.setBounds(350,390,120,30);
-        add(Agregar);
+        Agregar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == Agregar){
+                    ConfigTabla CT = new ConfigTabla(getConn(),ID);
+                    CT.setLocationRelativeTo(null);
+                    CT.setVisible(true);
+
+                    System.out.println(rutinas.getRutinas().size());
+
+                }
+            }
+        });
+        InterfazPrincipal.add(Agregar);
 
         Modificar = new JButton("Modificar Rutina");
         Modificar.setBounds(473,390,130,30);
-        add(Modificar);
+        InterfazPrincipal.add(Modificar);
 
         Quitar = new JButton("Eliminar Rutina");
         Quitar.setBounds(606,390,120,30);
-        add(Quitar);
+        InterfazPrincipal.add(Quitar);
 
         RutinasDeUsuario = new JList<>(ListaDeRutinas);
         EjerciciosDeLaRutina = new JPanel();
+        EjerciciosDeLaRutina.setLayout(new BorderLayout());
+
+        Exel esel = new Exel();
 
         JScrollPane scrollPaneRutinas = new JScrollPane(RutinasDeUsuario);
         scrollPaneRutinas.setBounds(25,100,316,350);
-        add(scrollPaneRutinas);
+        InterfazPrincipal.add(scrollPaneRutinas);
 
         EjerciciosDeLaRutina.setBounds(350,100,376,250);
         EjerciciosDeLaRutina.setBackground(Color.white);
-        add(EjerciciosDeLaRutina);
+
+        JScrollPane JSPE = new JScrollPane(esel);
+
+
+        EjerciciosDeLaRutina.add(JSPE,BorderLayout.CENTER);
+        EjerciciosDeLaRutina.setVisible(true);
+
+
+        InterfazPrincipal.add(EjerciciosDeLaRutina);
 
     }
 
     public void CargarRutinas(Connection Conn) throws SQLException, IOException, ClassNotFoundException {
 
-        PreparedStatement pstm = Conn.prepareStatement("SELECT rutina FROM usuarios WHERE id = ?");
+        GetData GD = new GetData();
 
-        pstm.setInt(1,ID);
-
-        ResultSet rs = pstm.executeQuery();
+        ResultSet rs = GD.ObtenerDatos(ID,getConn());
+        DescerealizarRutinas DR = new DescerealizarRutinas();
 
         if(rs.next()){
             byte[] Rutinas = rs.getBytes("rutina");
-            ByteArrayInputStream BAIS = new ByteArrayInputStream(Rutinas);
-            ObjectInputStream OIS = new ObjectInputStream(BAIS);
-
-            rutinas = (RUTINAS) OIS.readObject();
-
+            rutinas = DR.LeerBytesDeRutinas(Rutinas);
         }
 
-        if(rutinas.getRuninas().isEmpty()){
+        if(rutinas.getRutinas().isEmpty()){
             ListaDeRutinas.removeAllElements();
             ListaDeRutinas.addElement("No hay rutinas registradas");
+        }
+
+    }
+
+    static class Exel extends JTable{
+
+        public Exel() {
+            // Definir los nombres de las columnas
+            String[] columnas = {"ID", "Nombre", "Edad","Aca va a ir un texto largo"};
+
+            // Definir los datos con una sola fila
+            Object[][] datos = {
+                    {1, "Juan Carlos Ramirez de Nuestro Señor Jesucristo el salvador del mundo", 25}
+            };
+
+            // Establecer el modelo de la tabla
+            DefaultTableModel modelo = new DefaultTableModel(5, 6);
+            this.setModel(modelo);
+
+            this.getColumnModel().getColumn(1).setMinWidth(200);
+            this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
         }
 
     }

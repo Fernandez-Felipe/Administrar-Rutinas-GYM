@@ -1,14 +1,15 @@
 package Usuarios;
 
 
+import javax.swing.table.DefaultTableModel;
 import java.io.Serializable;
 
 public class Ejercicio implements Serializable {
 
     private String Nombre;
-    private int[][] Progrecion;
+    private double[] Progrecion;
 
-    public Ejercicio(String Nombre,int[][] Progrecion){
+    public Ejercicio(String Nombre,double[] Progrecion){
 
         this.Nombre = Nombre;
         this.Progrecion = Progrecion;
@@ -19,7 +20,8 @@ public class Ejercicio implements Serializable {
         return Nombre;
     }
 
-    public int[][] getProgrecion() {
+    public double[] getProgrecion() {
         return Progrecion;
     }
+
 }

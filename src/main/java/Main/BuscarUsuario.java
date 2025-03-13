@@ -1,5 +1,7 @@
 package Main;
 
+import Tools.ConnectionDB;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -8,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class BuscarUsuario extends JFrame {
 
@@ -20,7 +21,10 @@ public class BuscarUsuario extends JFrame {
     String SQL = "SELECT * FROM usuarios WHERE id = ?";
     int id;
 
-    public BuscarUsuario(){
+    public BuscarUsuario(Connection Conn){
+
+        this.Conn = Conn;
+
         setLayout(new BorderLayout());
         setSize(300, 180);
         setResizable(false);
@@ -51,7 +55,7 @@ public class BuscarUsuario extends JFrame {
                     id = Integer.parseInt(JTF.getText());
 
                     try {
-                        Conn = main.Conectar.getConn();
+
                         pstm = Conn.prepareStatement(SQL);
 
                         pstm.setInt(1, id);
@@ -62,15 +66,15 @@ public class BuscarUsuario extends JFrame {
                             String nombre = rs.getString(2);
                             String apellido = rs.getString(3);
 
-                            main.Window.NombreDeUsuario.setText("");
-                            main.Window.NombreDeUsuario.setText("Rutina de: "+nombre+" "+apellido);
+                            Main.Window.NombreDeUsuario.setText("");
+                            Main.Window.NombreDeUsuario.setText("Rutina de: "+nombre+" "+apellido);
 
                             System.out.println("Nombre: " + nombre);
                             System.out.println("Edad: " + apellido);
 
                             InterfazRutinas.ID = rs.getInt(1);
 
-                            main.Window.CargarRutinas(Conn);
+                            Main.Window.CargarRutinas(Conn);
 
                             dispose();
 

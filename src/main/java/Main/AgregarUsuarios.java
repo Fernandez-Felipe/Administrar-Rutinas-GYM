@@ -2,18 +2,14 @@ package Main;
 
 
 
-import Usuarios.Ejercicio;
-import Usuarios.RUTINAS;
-import Usuarios.Rutina;
+import Tools.ConnectionDB;
+import Tools.GenRutinas;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 
 public class AgregarUsuarios extends JFrame {
 
@@ -21,9 +17,12 @@ public class AgregarUsuarios extends JFrame {
     JTextField dni, nombre, apellido;
     JButton Aceptar;
 
-    Connection Conn;
+    private final Connection Conn;
 
-    public AgregarUsuarios(){
+    public AgregarUsuarios(Connection Conn){
+
+        this.Conn = Conn;
+
         setLayout(null);
         setSize(400,200);
         setLocationRelativeTo(null);
@@ -70,16 +69,12 @@ public class AgregarUsuarios extends JFrame {
 
                     try{
 
-                        Conn = main.Conectar.getConn();
                         PreparedStatement pstm = Conn.prepareStatement("INSERT INTO usuarios (id,nombre,apellido,rutina)" +
                                                                            " VALUES (?,?,?,?)");
 
-                        ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
-                        ObjectOutputStream OOS = new ObjectOutputStream(BAOS);
-                        OOS.writeObject(new RUTINAS(new ArrayList<Rutina>()));
-                        OOS.close();
+                        GenRutinas GR = new GenRutinas(Conn);
 
-                        byte[] RutinasSerializadas = BAOS.toByteArray();
+                        byte[] RutinasSerializadas = GR.GenerarRutina();
 
                         pstm.setInt(1,Integer.parseInt(dni.getText()));
                         pstm.setString(2,nombre.getText());
