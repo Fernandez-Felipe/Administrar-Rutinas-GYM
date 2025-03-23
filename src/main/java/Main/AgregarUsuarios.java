@@ -2,7 +2,6 @@ package Main;
 
 
 
-import Tools.ConnectionDB;
 import Tools.GenRutinas;
 
 import javax.swing.*;

@@ -23,12 +23,14 @@ public class AgregarRutina extends JFrame {
     JMenu Opciones, Dimenciones;
     JMenuItem AgregarFila,QuitarFila, GuardarRutina;
     int Columnas, Filas, ID;
+    String Titulo;
     DefaultTableModel ModeloDeTabla;
     JTable Tabla;
     JScrollPane JSP;
 
-    public AgregarRutina(int Columnas, int Filas, int ID, Connection Conn){
+    public AgregarRutina(int Columnas, int Filas, int ID,String Titulo, Connection Conn){
 
+        this.Titulo = Titulo;
         this.Conn = Conn;
         this.ID = ID;
         this.Columnas = Columnas;
@@ -66,12 +68,15 @@ public class AgregarRutina extends JFrame {
         GuardarRutina.addActionListener(e -> {
             if(e.getSource() == GuardarRutina){
                 try {
+
+                    rutinas.addTitle(Titulo);
                     rutinas.AddRutina((DefaultTableModel) Tabla.getModel());
                     Tabla.getCellEditor().stopCellEditing();
                     InsertarRutinaNueva(rutinas);
+                    InterfazRutinas.CR.CargarRutinas();
                     dispose();
                 }catch (Exception ex){
-                    System.out.println(ex);
+                    System.out.println("Error en la linea 77"+ex);
                 }
             }
         });

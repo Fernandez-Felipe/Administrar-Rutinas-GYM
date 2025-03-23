@@ -1,42 +1,38 @@
 package Main;
 
+import Tools.CargarRutinas;
 import Tools.ConnectionDB;
-import Tools.DescerealizarRutinas;
-import Tools.GetData;
-import Usuarios.Ejercicio;
 import Usuarios.RUTINAS;
-
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class InterfazRutinas extends ConnectionDB {
 
+    static CargarRutinas CR;
 
     JFrame InterfazPrincipal;
     JList<String> RutinasDeUsuario;
     JPanel  EjerciciosDeLaRutina;
     JLabel NombreDeUsuario;
     JButton BuscarUsuario, Agregar, Modificar, Quitar;
-    DefaultListModel<String> ListaDeRutinas = new DefaultListModel<>();
+    static DefaultListModel<String> ListaDeRutinas = new DefaultListModel<>();
     JMenuBar MenuBar;
     JMenu Options;
     JMenuItem AddUser, DeleteUser;
 
     static RUTINAS rutinas;
 
-    public static int ID;
+    public static int ID, Select;
 
     public InterfazRutinas(){
 
@@ -117,9 +113,6 @@ public class InterfazRutinas extends ConnectionDB {
                     ConfigTabla CT = new ConfigTabla(getConn(),ID);
                     CT.setLocationRelativeTo(null);
                     CT.setVisible(true);
-
-                    System.out.println(rutinas.getRutinas().size());
-
                 }
             }
         });
@@ -131,13 +124,35 @@ public class InterfazRutinas extends ConnectionDB {
 
         Quitar = new JButton("Eliminar Rutina");
         Quitar.setBounds(606,390,120,30);
+        Quitar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                rutinas.getTitulos().remove(Select);
+                rutinas.getRutinas().remove(Select);
+                /*try {
+                    CR.CargarRutinas();
+                } catch (SQLException | IOException | ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                 */
+            }
+        });
         InterfazPrincipal.add(Quitar);
 
+        Exel esel = new Exel();
+
         RutinasDeUsuario = new JList<>(ListaDeRutinas);
+        RutinasDeUsuario.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Select = RutinasDeUsuario.getSelectedIndex();
+                esel.setModel(rutinas.getRutinas().get(Select));
+            }
+        });
         EjerciciosDeLaRutina = new JPanel();
         EjerciciosDeLaRutina.setLayout(new BorderLayout());
-
-        Exel esel = new Exel();
 
         JScrollPane scrollPaneRutinas = new JScrollPane(RutinasDeUsuario);
         scrollPaneRutinas.setBounds(25,100,316,350);
@@ -154,25 +169,6 @@ public class InterfazRutinas extends ConnectionDB {
 
 
         InterfazPrincipal.add(EjerciciosDeLaRutina);
-
-    }
-
-    public void CargarRutinas(Connection Conn) throws SQLException, IOException, ClassNotFoundException {
-
-        GetData GD = new GetData();
-
-        ResultSet rs = GD.ObtenerDatos(ID,getConn());
-        DescerealizarRutinas DR = new DescerealizarRutinas();
-
-        if(rs.next()){
-            byte[] Rutinas = rs.getBytes("rutina");
-            rutinas = DR.LeerBytesDeRutinas(Rutinas);
-        }
-
-        if(rutinas.getRutinas().isEmpty()){
-            ListaDeRutinas.removeAllElements();
-            ListaDeRutinas.addElement("No hay rutinas registradas");
-        }
 
     }
 

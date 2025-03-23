@@ -21,7 +21,7 @@ public class GenRutinas {
 
     public byte[] GenerarRutina(){
 
-        RUTINAS RutinasNuevas = new RUTINAS(new ArrayList<>());
+        RUTINAS RutinasNuevas = new RUTINAS(new ArrayList<>(),new ArrayList<>());
 
         try{
 

@@ -1,6 +1,9 @@
 package Main;
 
+import Tools.CargarRutinas;
 import Tools.ConnectionDB;
+import Tools.DescerealizarRutinas;
+import Usuarios.RUTINAS;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -65,6 +68,11 @@ public class BuscarUsuario extends JFrame {
 
                             String nombre = rs.getString(2);
                             String apellido = rs.getString(3);
+                            byte[] RutinasEnBytes = rs.getBytes(4);
+
+                            DescerealizarRutinas DR = new DescerealizarRutinas();
+
+                            InterfazRutinas.rutinas = DR.LeerBytesDeRutinas(RutinasEnBytes);
 
                             Main.Window.NombreDeUsuario.setText("");
                             Main.Window.NombreDeUsuario.setText("Rutina de: "+nombre+" "+apellido);
@@ -74,8 +82,8 @@ public class BuscarUsuario extends JFrame {
 
                             InterfazRutinas.ID = rs.getInt(1);
 
-                            Main.Window.CargarRutinas(Conn);
-
+                            InterfazRutinas.CR = new CargarRutinas(id,InterfazRutinas.ListaDeRutinas,Conn);
+                            InterfazRutinas.CR.CargarRutinas();
                             dispose();
 
                         } else {
