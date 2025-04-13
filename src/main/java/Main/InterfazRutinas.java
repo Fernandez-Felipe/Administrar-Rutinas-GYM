@@ -2,6 +2,7 @@ package Main;
 
 import Tools.CargarRutinas;
 import Tools.ConnectionDB;
+import Tools.SerializarRutina;
 import Usuarios.RUTINAS;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -11,7 +12,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
@@ -49,6 +53,9 @@ public class InterfazRutinas extends ConnectionDB {
     }
 
     private void Init(){
+
+        Exel esel = new Exel();
+        RutinasDeUsuario = new JList<>(ListaDeRutinas);
 
         MenuBar = new JMenuBar();
         InterfazPrincipal.setJMenuBar(MenuBar);
@@ -128,27 +135,47 @@ public class InterfazRutinas extends ConnectionDB {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                rutinas.getTitulos().remove(Select);
-                rutinas.getRutinas().remove(Select);
-                /*try {
-                    CR.CargarRutinas();
-                } catch (SQLException | IOException | ClassNotFoundException ex) {
-                    throw new RuntimeException(ex);
+                if(e.getSource() == Quitar) {
+
+                    System.out.println(Select);
+
+                    rutinas.getTitulos().remove(Select);
+                    rutinas.getRutinas().remove(Select);
+
+                    try {
+                        SerializarRutina SR = new SerializarRutina(rutinas);
+                        byte[] RS = SR.RutinasEnBytes();
+
+                        PreparedStatement PSTM = getConn().prepareStatement("UPDATE usuarios " +
+                                                                               "SET rutina = ?" +
+                                                                               "WHERE id = ? ");
+                        PSTM.setBytes(1,RS);
+                        PSTM.setInt(2,ID);
+
+                        PSTM.executeUpdate();
+
+                        CR.CargarRutinas();
+
+                    } catch (IOException | SQLException | ClassNotFoundException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
 
-                 */
             }
         });
         InterfazPrincipal.add(Quitar);
 
-        Exel esel = new Exel();
 
-        RutinasDeUsuario = new JList<>(ListaDeRutinas);
+
         RutinasDeUsuario.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                Select = RutinasDeUsuario.getSelectedIndex();
-                esel.setModel(rutinas.getRutinas().get(Select));
+                try {
+                    Select = RutinasDeUsuario.getSelectedIndex();
+                    esel.setModel(rutinas.getRutinas().get(Select));
+                }catch (IndexOutOfBoundsException ignored){
+                    esel.setModel(new DefaultTableModel());
+                }
             }
         });
         EjerciciosDeLaRutina = new JPanel();

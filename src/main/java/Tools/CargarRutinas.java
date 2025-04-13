@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class CargarRutinas {
 
     int ID;
-    RUTINAS rutinas;
+    static RUTINAS rutinas;
     DefaultListModel<String> ListaDeRutinas;
     Connection Conn;
 
