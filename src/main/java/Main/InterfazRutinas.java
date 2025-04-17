@@ -9,13 +9,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+
 import java.sql.SQLException;
-import java.sql.Statement;
 
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
@@ -54,7 +51,7 @@ public class InterfazRutinas extends ConnectionDB {
 
     private void Init(){
 
-        Exel esel = new Exel();
+        JTable Exel = new JTable();
         RutinasDeUsuario = new JList<>(ListaDeRutinas);
 
         MenuBar = new JMenuBar();
@@ -64,28 +61,26 @@ public class InterfazRutinas extends ConnectionDB {
         MenuBar.add(Options);
 
         AddUser = new JMenuItem("Agregar Usuario");
-        AddUser.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        AddUser.addActionListener(e -> {
+
                 if(e.getSource() == AddUser){
                     AgregarUsuarios AU = new AgregarUsuarios(getConn());
                     AU.setLocationRelativeTo(null);
                     AU.setVisible(true);
                 }
-            }
+
         });
         Options.add(AddUser);
 
         DeleteUser = new JMenuItem("Elimianr Usuario");
-        DeleteUser.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        DeleteUser.addActionListener( e ->{
+
                 if(e.getSource() == DeleteUser){
                     EliminarUsuario EU = new EliminarUsuario(getConn());
                     EU.setLocationRelativeTo(null);
                     EU.setVisible(true);
                 }
-            }
+
         });
         Options.add(DeleteUser);
 
@@ -97,9 +92,8 @@ public class InterfazRutinas extends ConnectionDB {
         //Botonos
         BuscarUsuario = new JButton("Buscar");
         BuscarUsuario.setBounds(240,60,100,30);
-        BuscarUsuario.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        BuscarUsuario.addActionListener(e ->{
+
                 if(e.getSource() == BuscarUsuario){
 
                         BuscarUsuario B = new BuscarUsuario(getConn());
@@ -107,21 +101,20 @@ public class InterfazRutinas extends ConnectionDB {
                         B.setVisible(true);
 
                 }
-            }
+
         });
         InterfazPrincipal.add(BuscarUsuario);
 
         Agregar = new JButton("Agregar Rutina");
         Agregar.setBounds(350,390,120,30);
-        Agregar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        Agregar.addActionListener( e ->{
+
                 if(e.getSource() == Agregar){
                     ConfigTabla CT = new ConfigTabla(getConn(),ID);
                     CT.setLocationRelativeTo(null);
                     CT.setVisible(true);
                 }
-            }
+
         });
         InterfazPrincipal.add(Agregar);
 
@@ -131,13 +124,9 @@ public class InterfazRutinas extends ConnectionDB {
 
         Quitar = new JButton("Eliminar Rutina");
         Quitar.setBounds(606,390,120,30);
-        Quitar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        Quitar.addActionListener(e -> {
 
                 if(e.getSource() == Quitar) {
-
-                    System.out.println(Select);
 
                     rutinas.getTitulos().remove(Select);
                     rutinas.getRutinas().remove(Select);
@@ -156,27 +145,24 @@ public class InterfazRutinas extends ConnectionDB {
 
                         CR.CargarRutinas();
 
-                    } catch (IOException | SQLException | ClassNotFoundException ex) {
-                        throw new RuntimeException(ex);
+                    } catch (IOException | SQLException | ClassNotFoundException ignored) {
+
                     }
                 }
-
-            }
         });
         InterfazPrincipal.add(Quitar);
 
 
 
-        RutinasDeUsuario.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
+        RutinasDeUsuario.addListSelectionListener(e -> {
+
                 try {
                     Select = RutinasDeUsuario.getSelectedIndex();
-                    esel.setModel(rutinas.getRutinas().get(Select));
+                    Exel.setModel(rutinas.getRutinas().get(Select));
                 }catch (IndexOutOfBoundsException ignored){
-                    esel.setModel(new DefaultTableModel());
+                    Exel.setModel(new DefaultTableModel());
                 }
-            }
+
         });
         EjerciciosDeLaRutina = new JPanel();
         EjerciciosDeLaRutina.setLayout(new BorderLayout());
@@ -188,7 +174,7 @@ public class InterfazRutinas extends ConnectionDB {
         EjerciciosDeLaRutina.setBounds(350,100,376,250);
         EjerciciosDeLaRutina.setBackground(Color.white);
 
-        JScrollPane JSPE = new JScrollPane(esel);
+        JScrollPane JSPE = new JScrollPane(Exel);
 
 
         EjerciciosDeLaRutina.add(JSPE,BorderLayout.CENTER);
@@ -196,28 +182,6 @@ public class InterfazRutinas extends ConnectionDB {
 
 
         InterfazPrincipal.add(EjerciciosDeLaRutina);
-
-    }
-
-    static class Exel extends JTable{
-
-        public Exel() {
-            // Definir los nombres de las columnas
-            String[] columnas = {"ID", "Nombre", "Edad","Aca va a ir un texto largo"};
-
-            // Definir los datos con una sola fila
-            Object[][] datos = {
-                    {1, "Juan Carlos Ramirez de Nuestro Señor Jesucristo el salvador del mundo", 25}
-            };
-
-            // Establecer el modelo de la tabla
-            DefaultTableModel modelo = new DefaultTableModel(5, 6);
-            this.setModel(modelo);
-
-            this.getColumnModel().getColumn(1).setMinWidth(200);
-            this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-        }
 
     }
 

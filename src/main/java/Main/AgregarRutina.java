@@ -24,6 +24,7 @@ public class AgregarRutina extends JFrame {
     JMenuItem AgregarFila,QuitarFila, GuardarRutina;
     int Columnas, Filas, ID;
     String Titulo;
+    String[] Encabezado;
     DefaultTableModel ModeloDeTabla;
     JTable Tabla;
     JScrollPane JSP;
@@ -35,6 +36,8 @@ public class AgregarRutina extends JFrame {
         this.ID = ID;
         this.Columnas = Columnas;
         this.Filas = Filas;
+
+        Encabezado = new String[Columnas];
 
         setLayout(new BorderLayout());
         setSize(600,400);
@@ -67,16 +70,20 @@ public class AgregarRutina extends JFrame {
         GuardarRutina = new JMenuItem("Guardar Rutina");
         GuardarRutina.addActionListener(e -> {
             if(e.getSource() == GuardarRutina){
-                try {
 
+                Tabla.getCellEditor().stopCellEditing();
+
+                DefaultTableModel TablaActualizada = new DefaultTableModel(Encabezado,0);
+                CargarFilas(TablaActualizada);
+
+                try {
                     rutinas.addTitle(Titulo);
-                    rutinas.AddRutina((DefaultTableModel) Tabla.getModel());
-                    Tabla.getCellEditor().stopCellEditing();
+                    rutinas.AddRutina(TablaActualizada);
                     InsertarRutinaNueva(rutinas);
                     InterfazRutinas.CR.CargarRutinas();
                     dispose();
                 }catch (Exception ex){
-                    System.out.println("Error en la linea 77"+ex);
+                    ex.printStackTrace();
                 }
             }
         });
@@ -93,6 +100,7 @@ public class AgregarRutina extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int col = JTH.columnAtPoint(e.getPoint());
+                System.out.println(col);
                 String newName;
                 if (col >= 0 && e.getClickCount() == 2) {
                     String Casilla = Tabla.getColumnName(col);
@@ -104,9 +112,11 @@ public class AgregarRutina extends JFrame {
 
                     if(newName == null){
                         Tabla.getColumnModel().getColumn(col).setHeaderValue(" ");
+                        Encabezado[col] = " ";
                     }
 
                     Tabla.getColumnModel().getColumn(col).setHeaderValue(newName);
+                    Encabezado[col] = newName;
                     JTH.repaint();
 
                 }
@@ -144,15 +154,15 @@ public class AgregarRutina extends JFrame {
 
     }
 
-    private void test(DefaultTableModel DTB){
-        for (int i = 0; i < DTB.getRowCount(); i++) {
-            for (int j = 0; j < DTB.getColumnCount(); j++) {
-                Object value = DTB.getValueAt(i, j);
-                if (value != null) {
-                    System.out.println("Celda [" + i + "," + j + "] - Tipo: " + value.getClass().getName());
-                }
+    private void CargarFilas(DefaultTableModel NuevoModelo){
+        for (int i = 0; i < Filas; i++) {
+            Object[] fila = new Object[Tabla.getModel().getColumnCount()];
+            for (int j = 0; j < Tabla.getModel().getColumnCount(); j++) {
+                fila[j] = Tabla.getValueAt(i, j);
             }
+            NuevoModelo.addRow(fila);
         }
     }
+
 
 }
