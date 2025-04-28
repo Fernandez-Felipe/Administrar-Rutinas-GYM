@@ -5,8 +5,6 @@ import Tools.ConnectionDB;
 import Tools.SerializarRutina;
 import Usuarios.RUTINAS;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
